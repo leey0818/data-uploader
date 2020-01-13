@@ -1,44 +1,43 @@
 <template>
-  <div id="app">
-    <v-app>
-      <v-content>
-        <v-container fluid>
+  <v-app>
+    <v-content>
+      <v-container fluid>
+        <h2>파일 업로드</h2>
 
-          <v-stepper v-model="step" vertical>
-            <v-stepper-step :complete="step > 1" step="1">파일 선택</v-stepper-step>
-            <v-stepper-content step="1">
-              <file-select v-model="file" placeholder="파일을 선택하세요." :loading="loading"></file-select>
-            </v-stepper-content>
+        <v-stepper v-model="step" vertical>
+          <v-stepper-step :complete="step > 1" step="1">파일 선택</v-stepper-step>
+          <v-stepper-content step="1">
+            <file-select v-model="file" placeholder="파일을 선택하세요." :loading="loading"></file-select>
+          </v-stepper-content>
 
-            <v-stepper-step :complete="step > 2" step="2">
-              시트 선택 <small v-if="step > 2">"{{ currentSheetName }}" 선택됨</small>
-            </v-stepper-step>
-            <v-stepper-content step="2">
-              <v-select v-model="currentSheetName" dense :items="sheetNames"></v-select>
-              <v-btn
-                color="primary"
-                depressed
-                small
-                :disabled="currentSheetName === null"
-                @click="step = 3"
-              >선택완료</v-btn>
-              <v-btn class="ml-1" depressed small @click="file = null">이전으로</v-btn>
-            </v-stepper-content>
+          <v-stepper-step :complete="step > 2" step="2">
+            시트 선택 <small v-if="step > 2">"{{ currentSheetName }}" 선택됨</small>
+          </v-stepper-step>
+          <v-stepper-content step="2">
+            <v-select v-model="currentSheetName" dense :items="sheetNames"></v-select>
+            <v-btn
+              color="primary"
+              depressed
+              small
+              :disabled="currentSheetName === null"
+              @click="step = 3"
+            >선택완료</v-btn>
+            <v-btn class="ml-1" depressed small @click="file = null">이전으로</v-btn>
+          </v-stepper-content>
 
-            <v-stepper-step step="3">매핑할 데이터 선택</v-stepper-step>
-            <v-stepper-content step="3">
-              <!-- todo -->
-            </v-stepper-content>
-          </v-stepper>
-        </v-container>
-      </v-content>
-    </v-app>
-    <!-- <b-container fluid>
-      <h4 class="mb-4">Grid File Uploader</h4>
+          <v-stepper-step step="3">매핑할 데이터 선택</v-stepper-step>
+          <v-stepper-content step="3">
+            <!-- todo -->
+          </v-stepper-content>
 
-      <data-table :headers="headers" :items="items"></data-table>
-    </b-container> -->
-  </div>
+          <v-stepper-step step="4">데이터 확인</v-stepper-step>
+          <v-stepper-content step="4">
+            <!-- todo -->
+          </v-stepper-content>
+        </v-stepper>
+      </v-container>
+    </v-content>
+  </v-app>
 </template>
 
 <script>
@@ -123,6 +122,6 @@ export default {
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  color: #2c3e50;
+  color: #1f262d;
 }
 </style>

@@ -14,7 +14,7 @@
             시트 선택 <small v-if="step > 2">"{{ currentSheetName }}" 선택됨</small>
           </v-stepper-step>
           <v-stepper-content step="2">
-            <v-select v-model="currentSheetName" dense :items="sheetNames"></v-select>
+            <sheet-select v-model="currentSheetName" :items="sheetNames"></sheet-select>
             <v-btn
               color="primary"
               depressed
@@ -43,6 +43,7 @@
 <script>
 import XLSX from 'xlsx';
 import FileSelect from './components/FileSelect.vue';
+import SheetSelect from './components/SheetSelect.vue';
 
 let workbook;
 
@@ -50,14 +51,15 @@ export default {
   name: 'app',
   components: {
     FileSelect,
+    SheetSelect,
   },
   data() {
     return {
+      loading: false,
       step: 1,
       file: null,
-      loading: false,
       currentSheetName: null,
-      sheetNames: [{ value: null, text: '데이터를 가져올 시트를 선택하세요' }],
+      sheetNames: [],
       headers: [],
       items: [],
     };
@@ -68,7 +70,7 @@ export default {
         this.step = 1;
         this.workbook = null;
         this.currentSheetName = null;
-        this.sheetNames.splice(1, this.sheetNames.length - 1);
+        this.sheetNames = [];
       } else {
         this.step = 2;
         this.readFile(v);
@@ -102,6 +104,11 @@ export default {
         workbook = XLSX.read(data, { type: 'array' });
         this.loading = false;
         this.sheetNames.push(...workbook.SheetNames);
+
+        if (this.sheetNames.length === 1) {
+          this.currentSheetName = this.sheetNames[0];
+          this.step = 3;
+        }
       };
 
       reader.readAsArrayBuffer(file);

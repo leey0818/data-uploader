@@ -6,7 +6,8 @@
       :value="value"
       :accept="acceptType"
       :clearable="false"
-      :disabled="Boolean(value)"
+      :disabled="Boolean(value) && !error"
+      :error-messages="error ? `파일을 읽을 수 없습니다. 오류: ${error}` : null"
       :loading="loading"
       :placeholder="placeholder"
       @change="file => $emit('input', file)"
@@ -27,6 +28,7 @@ export default {
     value: File,
     loading: Boolean,
     placeholder: String,
+    error: String,
   },
   data() {
     return {

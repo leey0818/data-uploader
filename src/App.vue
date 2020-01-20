@@ -12,6 +12,7 @@
               v-model="file"
               :loading="loading"
               :error="errorMessage"
+              @select="readFile"
             ></file-select>
           </v-stepper-content>
 
@@ -74,12 +75,8 @@ export default {
     file(v) {
       if (v === null) {
         this.step = 1;
-        this.workbook = null;
         this.currentSheetName = null;
         this.sheetNames = [];
-      } else {
-        // this.step = 2;
-        this.readFile(v);
       }
     },
 
@@ -98,7 +95,7 @@ export default {
     },
   },
   methods: {
-    readFile(file) {
+    readFile() {
       // read start
       this.loading = true;
       this.errorMessage = null;
@@ -106,7 +103,7 @@ export default {
       const readFile = f => new Promise((resolve, reject) => {
         const reader = new FileReader();
         reader.onerror = evt => reject(evt.target.error);
-        reader.onload = evt => resolve(new Uint8Array(evt.target.result));
+        reader.onload = evt => resolve(evt.target.result);
         reader.readAsArrayBuffer(f);
       });
 
@@ -119,7 +116,7 @@ export default {
         }
       });
 
-      readFile(file).then(parseFile).then((wb) => {
+      readFile(this.file).then(parseFile).then((wb) => {
         this.step = 2;
         this.loading = false;
         this.sheetNames.push(...wb.SheetNames);

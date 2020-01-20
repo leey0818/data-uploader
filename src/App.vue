@@ -7,7 +7,12 @@
         <v-stepper v-model="step" vertical>
           <v-stepper-step :complete="step > 1" step="1">파일 선택</v-stepper-step>
           <v-stepper-content step="1">
-            <file-select v-model="file" placeholder="파일을 선택하세요." :loading="loading"></file-select>
+            <file-select
+              placeholder="파일을 선택하세요."
+              v-model="file"
+              :loading="loading"
+              :error="errorMessage"
+            ></file-select>
           </v-stepper-content>
 
           <v-stepper-step :complete="step > 2" step="2">
@@ -55,9 +60,10 @@ export default {
   },
   data() {
     return {
-      loading: false,
       step: 1,
       file: null,
+      loading: false,
+      errorMessage: null,
       currentSheetName: null,
       sheetNames: [],
       headers: [],
@@ -72,7 +78,7 @@ export default {
         this.currentSheetName = null;
         this.sheetNames = [];
       } else {
-        this.step = 2;
+        // this.step = 2;
         this.readFile(v);
       }
     },
@@ -95,23 +101,38 @@ export default {
     readFile(file) {
       // read start
       this.loading = true;
+      this.errorMessage = null;
 
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const data = new Uint8Array(e.target.result);
+      const readFile = f => new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onerror = evt => reject(evt.target.error);
+        reader.onload = evt => resolve(new Uint8Array(evt.target.result));
+        reader.readAsArrayBuffer(f);
+      });
 
-        // read file
-        workbook = XLSX.read(data, { type: 'array' });
+      const parseFile = data => new Promise((resolve, reject) => {
+        try {
+          const wb = XLSX.read(data, { type: 'array' });
+          resolve(wb);
+        } catch (e) {
+          reject(e);
+        }
+      });
+
+      readFile(file).then(parseFile).then((wb) => {
+        this.step = 2;
         this.loading = false;
-        this.sheetNames.push(...workbook.SheetNames);
+        this.sheetNames.push(...wb.SheetNames);
+
+        workbook = wb;
 
         if (this.sheetNames.length === 1) {
           this.currentSheetName = this.sheetNames[0];
-          this.step = 3;
         }
-      };
-
-      reader.readAsArrayBuffer(file);
+      }).catch((e) => {
+        this.loading = false;
+        this.errorMessage = e.message;
+      });
     },
 
     getSheet(name) {
@@ -123,12 +144,3 @@ export default {
   },
 };
 </script>
-
-<style>
-#app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  color: #1f262d;
-}
-</style>

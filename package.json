@@ -13,7 +13,7 @@
     "core-js": "^3.4.4",
     "roboto-fontface": "*",
     "vue": "^2.6.10",
-    "vuetify": "^2.2.3",
+    "vuetify": "^2.6.10",
     "xlsx": "^0.15.4"
   },
   "devDependencies": {
